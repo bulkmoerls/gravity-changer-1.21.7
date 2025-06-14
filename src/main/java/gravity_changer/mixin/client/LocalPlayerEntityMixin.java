@@ -3,6 +3,7 @@ package gravity_changer.mixin.client;
 import com.mojang.authlib.GameProfile;
 import gravity_changer.api.GravityChangerAPI;
 import gravity_changer.util.RotationUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -10,21 +11,59 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerEntityMixin extends AbstractClientPlayer {
-    public LocalPlayerEntityMixin(ClientLevel world, GameProfile profile) {
+
+    @Shadow
+    private boolean autoJumpEnabled;
+
+    @Mutable
+    @Shadow
+    @Final
+    protected final Minecraft minecraft;
+
+    public LocalPlayerEntityMixin(ClientLevel world, GameProfile profile, Minecraft minecraft) {
         super(world, profile);
+        this.minecraft = minecraft;
     }
     
     @Shadow
     protected abstract boolean suffocatesAt(BlockPos pos);
+
+    //disables the annoying auto-jump functionality while swinging gravity direction
+
+    @Inject(
+            method = "updateAutoJump",
+            at = @At("HEAD"),
+            cancellable = true)
+    private void inject_setAutoJumpDisableWhenChangeGravityDirection_1(CallbackInfo ci) {
+        if (GravityChangerAPI.getGravityDirection(this) != Direction.DOWN) {
+            ci.cancel();
+        }
+    }
+
+
+    @Inject(
+            method = "sendPosition",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;autoJump()Lnet/minecraft/client/OptionInstance;",
+                    shift = At.Shift.AFTER
+            )
+    )private void inject_setAutoJumpDisableWhenChangeGravityDirection_2(CallbackInfo ci) {
+        if (this.minecraft.getCameraEntity() == this) {
+            if (GravityChangerAPI.getGravityDirection(this) != Direction.DOWN)
+                this.autoJumpEnabled = false;
+        }
+    }
     
     @Redirect(
         method = "suffocatesAt(Lnet/minecraft/core/BlockPos;)Z",
