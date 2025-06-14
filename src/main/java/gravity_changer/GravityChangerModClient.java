@@ -13,7 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
 public class GravityChangerModClient implements ClientModInitializer {
-    private static final String ISSUE_LINK = "https://modrinth.com/mod/gravity-changer-unofficial-port";
+    private static final String ISSUE_LINK = "https://github.com/NightEpiphany/gravity-changer-1.21.1/issues";
+    private static final String MODRINTH_LINK = "https://modrinth.com/mod/gravity-changer-unofficial-port";
     private static boolean displayPreviewWarning = true;
     
     @Override
@@ -26,9 +27,10 @@ public class GravityChangerModClient implements ClientModInitializer {
                 if (displayPreviewWarning) {
                     displayPreviewWarning = false;
                     client.player.sendSystemMessage(
-                        Component.translatable("gravity_changer.preview").append(
-                            GCUtil.getLinkText(ISSUE_LINK).withStyle(ChatFormatting.UNDERLINE)
-                        )
+                        Component.translatable("gravity_changer.preview")
+                                .append(GCUtil.getLinkText(MODRINTH_LINK).withStyle(ChatFormatting.UNDERLINE))
+                                //.append("\n")
+                                //.append(GCUtil.getLinkText(ISSUE_LINK).withStyle(ChatFormatting.UNDERLINE))
                     );
                 }
             });
