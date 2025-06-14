@@ -4,7 +4,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import gravity_changer.api.GravityChangerAPI;
 import gravity_changer.util.RotationUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -20,10 +22,12 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -74,22 +78,22 @@ public abstract class PlayerMixin extends LivingEntity {
         args.set(1, (double) args.get(1) - rotate.y + (1.0D - 0.1D));
         args.set(2, (double) args.get(2) - rotate.z);
     }
-    //@Redirect(
-    //        method = "travel",
-    //        at = @At(
-    //                value = "NEW",
-    //                target = "Lnet/minecraft/util/math/BlockPos;<init>(DDD)V",
-    //                ordinal = 0
-    //        )
-    //)
-    //private BlockPos redirect_travel_new_0(double x, double y, double z) {
-    //    Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
-    //    if(gravityDirection == Direction.DOWN) {
-    //        return new BlockPos(x, y, z);
-    //    }
+//    @Redirect(
+//            method = "travel",
+//            at = @At(
+//                    value = "NEW",
+//                    target = "Lnet/minecraft/util/math/BlockPos;<init>(DDD)V",
+//                    ordinal = 0
+//            )
+//    )
+//    private BlockPos redirect_travel_new_0(double x, double y, double z) {
+//        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
+//        if(gravityDirection == Direction.DOWN) {
+//            return new BlockPos(x, y, z);
+//        }
 //
-    //    return new BlockPos(this.getPos().add(RotationUtil.vecPlayerToWorld(0.0D, 1.0D - 0.1D, 0.0D, gravityDirection)));
-    //}
+//        return new BlockPos(this.getPos().add(RotationUtil.vecPlayerToWorld(0.0D, 1.0D - 0.1D, 0.0D, gravityDirection)));
+//    }
     
     @Redirect(
         method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;",
@@ -297,23 +301,33 @@ public abstract class PlayerMixin extends LivingEntity {
         
         return RotationUtil.rotPlayerToWorld(original.call(attacker), attacker.getXRot(), gravityDirection).x;
     }
-    
-//    @ModifyArgs(
-//        method = "addParticlesAroundSelf",
-//        at = @At(
-//            value = "INVOKE",
-//            target = "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V"
-//        )
-//    )
-//    private void modify_addDeathParticless_addParticle_0(Args args) {
-//        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
-//        if (gravityDirection == Direction.DOWN) return;
-//
-//        Vec3 vec3d = this.position().subtract(RotationUtil.vecPlayerToWorld(this.position().subtract(args.get(1), args.get(2), args.get(3)), gravityDirection));
-//        args.set(1, vec3d.x);
-//        args.set(2, vec3d.y);
-//        args.set(3, vec3d.z);
-//    }
+
+
+    @Unique
+    private void addParticlesAroundSelf() {
+        for(int var2 = 0; var2 < 5; ++var2) {
+            double x = this.getRandomX(1.0);
+            double y = this.getRandomY() + 1.0;
+            double z = this.getRandomZ(1.0);
+            double var3 = this.random.nextGaussian() * 0.02;
+            double var5 = this.random.nextGaussian() * 0.02;
+            double var7 = this.random.nextGaussian() * 0.02;
+            Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
+            if (gravityDirection == Direction.DOWN) {
+                this.level().addParticle(ParticleTypes.CLOUD, x, y, z, var3, var5, var7);
+                return;
+            }
+            Vec3 vec3d = this.position().subtract(RotationUtil.vecPlayerToWorld(this.position().subtract(x, y, z), gravityDirection));
+            this.level().addParticle(ParticleTypes.CLOUD, vec3d.x,vec3d.y, vec3d.z, var3, var5, var7);
+        }
+    }
+
+    @Inject(
+            method = "handleEntityEvent",
+            at = @At("HEAD")
+    )private void inject_handle(byte b, CallbackInfo ci) {
+        if (b == 43) this.addParticlesAroundSelf();
+    }
     
     @ModifyArgs(
         method = "aiStep",

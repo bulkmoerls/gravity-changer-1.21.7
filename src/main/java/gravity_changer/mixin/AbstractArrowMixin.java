@@ -53,7 +53,7 @@ public abstract class AbstractArrowMixin extends Entity {
     )
     private static void modify_args_init_init_0(
         Args args, EntityType<? extends ThrowableProjectile> type,
-        LivingEntity owner, Level world, ItemStack itemStack
+        LivingEntity owner, Level world, ItemStack itemStack1, ItemStack itemStack2
     ) {
         Direction gravityDirection = GravityChangerAPI.getGravityDirection(owner);
         if (gravityDirection == Direction.DOWN) return;
@@ -64,8 +64,8 @@ public abstract class AbstractArrowMixin extends Entity {
         args.set(3, pos.z);
     }
     
-//    @ModifyConstant(method = "tick()V", constant = @Constant())
-//    private double multiplyGravity(double constant) {
-//        return constant * GravityChangerAPI.getGravityStrength(this);
-//    }
+    @ModifyConstant(method = "tick()V", constant = @Constant())
+    private double multiplyGravity(double constant) {
+        return constant * GravityChangerAPI.getGravityStrength(this);
+    }
 }

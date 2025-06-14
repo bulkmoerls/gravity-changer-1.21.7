@@ -33,9 +33,9 @@ public class GravityStrengthStatusEffect extends MobEffect {
 
     public static void init() {
 
-        GravityStrengthStatusEffect increase = new GravityStrengthStatusEffect(0x98D982, 1.2, 1);
+        GravityStrengthStatusEffect increase = new GravityStrengthStatusEffect(0x98D982, 2.2, 1);
 
-        GravityStrengthStatusEffect decrease = new GravityStrengthStatusEffect(0x28D982, 0.7, 1);
+        GravityStrengthStatusEffect decrease = new GravityStrengthStatusEffect(0x28D982, 0.25, 1);
 
         GravityStrengthStatusEffect reverse = new GravityStrengthStatusEffect(0x58D982, 1.0, -1);
 

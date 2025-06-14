@@ -4,11 +4,13 @@
   "package": "gravity_changer.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AbstractArrowMixin",
     "AbstractHorseMixin",
     "AbstractMinecartMixin",
     "AbstractSkeletonMixin",
     "AreaEffectCloudMixin",
     "BegGoalMixin",
+    "BoatMixin",
     "CrossbowItemMixin",
     "DirectionMixin",
     "DrownedMixin",

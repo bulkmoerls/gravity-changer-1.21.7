@@ -60,7 +60,7 @@ public class GravityPotions {
         for (Direction direction : Direction.values()) {
             Potion potion = new Potion(
                     new MobEffectInstance(
-                            GravityDirectionStatusEffect.getEffectInstance(direction), 9600, 1
+                            GravityDirectionStatusEffect.getEffectInstance(direction), 9600, 0
                     )
             );
             DIR_POTIONS.put(direction, potion);
