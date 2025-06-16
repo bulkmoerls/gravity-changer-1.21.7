@@ -2,14 +2,14 @@
 This fabric mod ports the [Gravity Changer (qouteall fork)](https://modrinth.com/mod/gravity-api-fork) based on [Gravity API](https://modrinth.com/mod/gravity-api) to higher **1.21** versions.
 
 ## Additions
-Currently on **alpha**.  
+Currently on **beta**.  
 Items are all for creative test only.  
 Some of the testing items are not in the creative tab
 - Gravity Changer (Stable)
 - Gravity related Commands (Stable)
-- Gravity Anchor (Untable)
+- Gravity Anchor (Stable)
 - Gravity Plate (Unstable)
-- Gravity Status Effect & Potions (Unstable)
+- Gravity Status Effect & Potions (Stable)
 
 ## Commands
 
