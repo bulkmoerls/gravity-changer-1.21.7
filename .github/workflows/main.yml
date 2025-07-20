@@ -1,0 +1,25 @@
+            - name: MC-DepUp
+  # You may pin to the exact commit or the version.
+  # uses: LucunJi/mc-depup@84a57e2e0ff9b27bb16c99e1b5afec7ee5f0cca7
+  uses: LucunJi/mc-depup@v0.1.2
+  with:
+    # 'Path to the config file'
+
+    config_path: # optional, default is ./.github/modding-dependencies.yml
+    # 'Update patch version of Minecraft'
+'true | false'
+
+    update_mc_patch: # optional, default is true
+    # 'Update only when Minecraft updates (depends on update_mc_patch)'
+'true | false'
+
+    update_only_with_mc: # optional
+    # 'Allow the update of any dependency to fail'
+'true | false'
+
+    tolerable: # optional
+    # 'The new configuration is not written to the file'
+'true | false'
+
+    dry_run: # optional
+          
